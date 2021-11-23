@@ -1,0 +1,480 @@
+{{ header|raw }}
+{{ column_left|raw }}
+
+<style>
+    .swedbank-group::after {
+        color: #959595;
+        font-size: 12px;
+        font-weight: 700;
+        left: 15px;
+        letter-spacing: 1px;
+        position: absolute;
+        text-transform: uppercase;
+        top: 15px;
+    }
+
+    .swedbank-group {
+        background-color: #fff;
+        border-color: #ddd;
+        border-radius: 4px 4px 0 0;
+        border-width: 1px;
+        box-shadow: none;
+        margin-left: 0;
+        margin-right: 0;
+        border-style: solid;
+        padding: 45px 15px 15px;
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .swedbank-group-lt::after{
+        content: "{{ text_lithuania }}";
+    }
+    .swedbank-group-lv::after{
+        content: "{{ text_latvia }}";
+    }
+    .swedbank-group-ee::after{
+        content: "{{ text_estonia }}";
+    }
+    .swedbank-group-general::after{
+        content: "{{ text_general }}";
+    }
+
+</style>
+
+<div id="content">
+    <div class="page-header">
+        <div class="container">
+            <div class="pull-right">
+                <button type="submit" form="form-swedbank" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel|raw }}" data-toggle="tooltip" title="{{ button_cancel}}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text|raw }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <form action="{{ action|raw }}" method="post" enctype="multipart/form-data" id="form-swedbank" class="form-horizontal">
+        <div class="container" style="margin-bottom: 15px;">
+            {%  if error_warning %}
+                <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endif %}
+
+
+            <div class="swedbank-group swedbank-group-general">
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3"><label>{{ text_notification_url }}</label></div>
+                    <div class="col-sm-9">{{ text_please_provide_url|raw }} {{ http }}://{{ hostSer }}/index.php?route=extension/payment/swedbank/bankinformme</div>
+                </div>
+
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3"><label>{{ text_nocron_url }}</label></div>
+                    <div class="col-sm-9">{{ text_cronjob|raw }} {{ http }}://{{ hostSer }}/index.php?route=extension/payment/swedbank/runcron</div>
+                </div>
+
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_status">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_status">
+                                <input class="" {% if swedbank_status == 1 %} checked="checked" {% endif %} name="swedbank_status" id="swedbank_status" style="" value="1" type="checkbox">{{ text_to_use_plugin }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_debuging_lt">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_debuging_lt">
+                                <input class="" {% if swedbank_debuging_lt == 1 %} checked="checked" {% endif %} name="swedbank_debuging_lt" id="swedbank_debuging_lt" style="" value="1" type="checkbox"> {{ text_debug }}</label><br>
+                            <p class="description">{{ text_storing_transaction }}</p>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="input-sort-order">{{ text_sort_order }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="form-control" name="swedbank_sort_order" id="input-sort-order" style="" placeholder="{{ text_sort_order }}" value="{{ swedbank_sort_order }}" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="input-order-status">{{ text_order_status_a_p }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <select class="form-control" id="input-order-status" name="swedbank_order_status_id">
+                                {%  for order_status in order_statuses %}
+                                    {% if order_status.order_status_id == swedbank_order_status_id %}
+                                        <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                                    {% else %}
+                                        <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </fieldset>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="swedbank-group swedbank-group-lt">
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_card_lt">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_card_lt">
+                                <input class="" name="swedbank_lt_card_status" {% if swedbank_lt_card_status == 1 %} checked="checked" {% endif %} id="swedbank_card_lt" style="" value="1" type="checkbox"> {{ text_card_paymnet_lt }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_swedbank_lt">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_swedbank_lt">
+                                <input class="" {% if swedbank_lt_swedbank_status == 1 %} checked="checked" {% endif %} name="swedbank_lt_swedbank_status" id="swedbank_swedbank_lt" style="" value="1" type="checkbox"> {{ text_swedbank_banklink_lt }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_seb_lt">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_seb_lt">
+                                <input class="" {% if swedbank_lt_seb_status == 1 %} checked="checked" {% endif %} name="swedbank_lt_seb_status" id="swedbank_seb_lt" style="" value="1" type="checkbox"> {{ text_seb_banklink_lt }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_dnb_lt">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_dnb_lt">
+                                <input class="" {% if swedbank_lt_dnb_status == 1 %} checked="checked" {% endif %} name="swedbank_lt_dnb_status" id="swedbank_dnb_lt" style="" value="1" type="checkbox"> {{ text_dnb_banklink_lt }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_testmode_lt">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_testmode_lt">
+                                <input class="" {% if swedbank_testmode_lt == 1 %} checked="checked" {% endif %} name="swedbank_testmode_lt" id="swedbank_testmode_lt" style="" value="1" type="checkbox"> {{ text_test_mode }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <span class="woocommerce-help-tip"></span> <label for="swedbank_testvtid_lt">{{ text_test_vtid_lt }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_testvtid_lt" id="swedbank_testvtid_lt" style="" value="{{ swedbank_testvtid_lt }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <span class="woocommerce-help-tip"></span> <label for="swedbank_testpass_lt">{{ text_test_password_lt }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_testpass_lt" id="swedbank_testpass_lt" style="" value="{{ swedbank_testpass_lt }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_vtid_lt">{{ text_vtid_lt }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_vtid_lt" id="swedbank_vtid_lt" style="" value="{{ swedbank_vtid_lt }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_pass_lt">{{ text_password_lt }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_pass_lt" id="swedbank_pass_lt" style="" value="{{ swedbank_pass_lt }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3 required">
+                        <label for="input-geo-zone-lt">{{ text_geo_zone_lt }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <select name="swedbank_geo_zone_id_lt" id="input-geo-zone-lt" class="form-control">
+                                <option value="0">{{ text_all_zones }}</option>
+                                {% for geo_zone in geo_zones %}
+                                    {% if geo_zone.geo_zone_id == swedbank_geo_zone_id_lt %}
+                                        <option value="{{ geo_zone.geo_zone_id }}" selected="selected">{{ geo_zone.name }}</option>
+                                    {% else %}
+                                        <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </fieldset>
+                    </div>
+                </div>
+
+                
+
+            </div>
+
+            <div class="swedbank-group swedbank-group-lv">
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_card_lv">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_card_lv">
+                                <input class="" {% if swedbank_lv_card_status == 1 %} checked="checked" {% endif %} name="swedbank_lv_card_status" id="swedbank_card_lv" style="" value="1" type="checkbox"> {{ text_card_paymnent_lv }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_swedbank_lv">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_swedbank_lv">
+                                <input class="" {% if swedbank_lv_swedbank_status == 1 %} checked="checked" {% endif %} name="swedbank_lv_swedbank_status" id="swedbank_swedbank_lv" style="" value="1" type="checkbox"> {{ text_swedbank_banklink_lv }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_seb_lv">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_seb_lv">
+                                <input class="" {% if swedbank_lv_seb_status == 1 %} checked="checked" {% endif %} name="swedbank_lv_seb_status" id="swedbank_seb_lv" style="" value="1" type="checkbox"> {{ text_seb_banklink_lv }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+
+
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_testmode_lv">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_testmode_lv">
+                                <input class="" {% if swedbank_testmode_lv == 1 %} checked="checked" {% endif %} name="swedbank_testmode_lv" id="swedbank_testmode_lv" style="" value="1" type="checkbox"> {{ text_test_mode }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <span class="woocommerce-help-tip"></span> <label for="swedbank_testvtid_lv">{{ text_test_vtid_lv }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_testvtid_lv" id="swedbank_testvtid_lv" style="" value="{{ swedbank_testvtid_lv }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <span class="woocommerce-help-tip"></span> <label for="swedbank_testpass_lv">{{ text_test_password_lv }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_testpass_lv" id="swedbank_testpass_lv" style="" value="{{ swedbank_testpass_lv }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_vtid_lv">{{ text_vtid_lv }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_vtid_lv" id="swedbank_vtid_lv" style="" value="{{ swedbank_vtid_lv }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_pass_lv">{{ text_password_lv }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_pass_lv" id="swedbank_pass_lv" style="" value="{{ swedbank_pass_lv }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="input-geo-zone-lv">{{ text_geo_zone_lv }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <select name="swedbank_geo_zone_id_lv" id="input-geo-zone-lv" class="form-control">
+                                <option value="0">{{ text_all_zones }}</option>
+                                {% for geo_zone in geo_zones %}
+                                    {%  if geo_zone.geo_zone_id == swedbank_geo_zone_id_lv %}
+                                        <option value="{{ geo_zone.geo_zone_id }}" selected="selected">{{ geo_zone.name }}</option>
+                                    {% else %}
+                                        <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </fieldset>
+                    </div>
+                </div>
+                
+
+            </div>
+
+            <div class="swedbank-group swedbank-group-ee">
+
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_card_ee">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_card_ee">
+                                <input class="" {% if swedbank_ee_card_status == 1 %} checked="checked" {% endif %} name="swedbank_ee_card_status" id="swedbank_card_ee" style="" value="1" type="checkbox"> {{ text_card_payment_ee }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_swedbank_ee">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_swedbank_ee">
+                                <input class="" {% if swedbank_ee_swedbank_status == 1 %} checked="checked" {% endif %} name="swedbank_ee_swedbank_status" id="swedbank_swedbank_ee" style="" value="1" type="checkbox"> {{ text_swedbank_banklink_ee }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_testmode_ee">{{ text_enable_disable }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <label for="swedbank_testmode_ee">
+                                <input class="" {% if swedbank_testmode_ee == 1 %} checked="checked" {% endif %} name="swedbank_testmode_ee" id="swedbank_testmode_ee" style="" value="1" type="checkbox"> {{ text_test_mode }}</label><br>
+                        </fieldset>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <span class="woocommerce-help-tip"></span> <label for="swedbank_testvtid_ee">{{ text_test_vtid_ee }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_testvtid_ee" id="swedbank_testvtid_ee" style="" value="{{ swedbank_testvtid_ee }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <span class="woocommerce-help-tip"></span> <label for="swedbank_testpass_ee">{{ text_test_password_ee }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_testpass_ee" id="swedbank_testpass_ee" style="" value="{{ swedbank_testpass_ee }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_vtid_ee">{{ text_vtid_ee }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_vtid_ee" id="swedbank_vtid_ee" style="" value="{{ swedbank_vtid_ee }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="swedbank_pass_ee">{{ text_password_ee }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <input class="input-text regular-input form-control" name="swedbank_pass_ee" id="swedbank_pass_ee" style="" value="{{ swedbank_pass_ee }}" placeholder="" type="text">
+                        </fieldset>
+                    </div>
+                </div>
+
+                <hr/>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-sm-3">
+                        <label for="input-geo-zone-ee">{{ text_geo_zone_ee }}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <fieldset>
+                            <select name="swedbank_geo_zone_id_ee" id="input-geo-zone-ee" class="form-control">
+                                <option value="0">{{ text_all_zones }}</option>
+                                {% for geo_zone in geo_zones %}
+                                    {%  if geo_zone.geo_zone_id == swedbank_geo_zone_id_ee %}
+                                        <option value="{{ geo_zone.geo_zone_id }}" selected="selected">{{ geo_zone.name }}</option>
+                                    {% else %}
+                                        <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </fieldset>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+</div>
+
+{{ footer|raw }}
